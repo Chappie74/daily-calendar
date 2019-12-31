@@ -3,17 +3,22 @@ $(document).ready(function(){
     initalize()
     $('.days').click(function()
     {
-            $(this).toggleClass('btn-success');
+            $(this).toggleClass('btn-warning');
             var tab_name = "tab_1"
             var month = $(this).prop("classList")[0]
             var day = $(this).html()
             var state;
-            if ($(this).hasClass('btn-success'))
+            if ($(this).hasClass('btn-warning'))
                 state = 1
             else
                 state = 0
             key = month + '_' + day
             save(tab_name, key, state)
+    });
+    $('#reset').click(function(){
+        chrome.storage.sync.clear()
+        $('.days').toggleClass('btn-warning', false)
+        alert('Calendar Reset!')
     });
 
 });
@@ -23,16 +28,20 @@ function initalize()
     populateMonthsDays()
     var tab_name = "tab_1"
     chrome.storage.sync.get([tab_name], function(data) {
-        Object.keys(data[tab_name]).forEach(function(key) {
-            var month_day = key.split('_')
-            $('.'+month_day[0]).each(function()
-            {
-                if ($(this).html() == month_day[1])
+        if (data[tab_name] !== undefined)
+        {
+            Object.keys(data[tab_name]).forEach(function(key) {
+                var month_day = key.split('_')
+                $('.'+month_day[0]).each(function()
                 {
-                    $(this).toggleClass('btn-success', true)
-                }
+                    if ($(this).html() == month_day[1] && data[tab_name][key] == 1)
+                    {
+                        $(this).toggleClass('btn-warning', true)
+                    }
+                });
             });
-        });
+        }
+       
     });
 }
 
